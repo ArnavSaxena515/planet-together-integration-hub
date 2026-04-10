@@ -58,7 +58,7 @@ export function SalesOrderSlideOver({ orders }: SalesOrderSlideOverProps) {
               activeTab === "writeback" ? "text-primary border-b-2 border-primary" : "text-slate-400 hover:text-slate-600 transition-colors"
             }`}
           >
-            Write Back to SAP
+            Update Sales Order
           </button>
         </div>
 
