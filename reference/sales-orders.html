@@ -1,0 +1,391 @@
+<!-- Sales Orders Dashboard -->
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sales Orders Dashboard - Planet Together Integration Hub</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 20;
+            font-size: 18px;
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #dfe3e8; border-radius: 10px; }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-container": "#cbdaff",
+                        "surface-container-highest": "#dfe3e8",
+                        "on-secondary": "#ffffff",
+                        "inverse-surface": "#2d3135",
+                        "on-error-container": "#93000a",
+                        "on-secondary-container": "#505f7f",
+                        "on-primary-container": "#dde5ff",
+                        "on-background": "#181c20",
+                        "on-error": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-container": "#4f688c",
+                        "error-container": "#ffdad6",
+                        "surface-container-high": "#e5e8ed",
+                        "primary": "#004ba6",
+                        "secondary-fixed": "#d8e2ff",
+                        "on-surface": "#181c20",
+                        "surface-tint": "#165abe",
+                        "background": "#f7f9fe",
+                        "surface-container": "#ebeef3",
+                        "on-primary-fixed": "#001a43",
+                        "tertiary": "#375073",
+                        "primary-fixed": "#d8e2ff",
+                        "on-primary-fixed-variant": "#004397",
+                        "tertiary-fixed": "#d4e3ff",
+                        "secondary-fixed-dim": "#b8c6eb",
+                        "outline-variant": "#c2c6d5",
+                        "error": "#ba1a1a",
+                        "surface": "#f7f9fe",
+                        "primary-container": "#2563c7",
+                        "on-secondary-fixed-variant": "#384765",
+                        "outline": "#737784",
+                        "surface-dim": "#d7dadf",
+                        "on-tertiary-container": "#dae7ff",
+                        "on-tertiary-fixed-variant": "#2e486a",
+                        "inverse-primary": "#aec6ff",
+                        "surface-bright": "#f7f9fe",
+                        "primary-fixed-dim": "#aec6ff",
+                        "surface-variant": "#dfe3e8",
+                        "on-surface-variant": "#424753",
+                        "tertiary-fixed-dim": "#aec8f1",
+                        "secondary": "#505e7e",
+                        "on-primary": "#ffffff",
+                        "surface-container-low": "#f1f4f9",
+                        "inverse-on-surface": "#eef1f6",
+                        "on-secondary-fixed": "#0b1b37",
+                        "on-tertiary-fixed": "#001c3a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-surface selection:bg-primary/20">
+<aside class="w-[240px] h-screen fixed left-0 top-0 bg-[#1B2A47] flex flex-col py-6 antialiased tracking-tight z-50">
+<div class="px-6 mb-8">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-white">hub</span>
+</div>
+<div>
+<h1 class="text-lg font-semibold text-white tracking-tight">Integration Hub</h1>
+<p class="text-[10px] text-slate-400 font-bold uppercase tracking-[0.1em]">Active Session</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 px-3 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded text-slate-400 hover:text-white hover:bg-white/5 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-[11px] font-bold uppercase tracking-[0.1em]">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded bg-blue-600/15 text-white border-r-2 border-blue-500 opacity-100 transition-all duration-150" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+<span class="text-[11px] font-bold uppercase tracking-[0.1em]">Sales Orders</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded text-slate-400 hover:text-white hover:bg-white/5 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">category</span>
+<span class="text-[11px] font-bold uppercase tracking-[0.1em]">Items</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded text-slate-400 hover:text-white hover:bg-white/5 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+<span class="text-[11px] font-bold uppercase tracking-[0.1em]">Inventory</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded text-slate-400 hover:text-white hover:bg-white/5 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">sync_alt</span>
+<span class="text-[11px] font-bold uppercase tracking-[0.1em]">Sync Log</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded text-slate-400 hover:text-white hover:bg-white/5 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-[11px] font-bold uppercase tracking-[0.1em]">Settings</span>
+</a>
+</nav>
+<div class="px-6 mt-auto">
+<div class="py-3 mb-6 px-3 bg-white/5 rounded-lg">
+<p class="text-[10px] text-blue-400 font-bold uppercase tracking-widest">Connection Status: Stable</p>
+</div>
+<div class="space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined text-sm">help</span>
+<span class="text-[11px] font-bold uppercase tracking-[0.1em]">Support</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined text-sm">logout</span>
+<span class="text-[11px] font-bold uppercase tracking-[0.1em]">Log Out</span>
+</a>
+</div>
+</div>
+</aside>
+<main class="ml-[240px] min-h-screen flex flex-col">
+<header class="h-14 w-full sticky top-0 z-40 bg-white/85 backdrop-blur-md border-b border-slate-200/20 flex items-center justify-between px-8 shadow-sm">
+<div class="flex items-center gap-6">
+<div class="flex flex-col">
+<nav class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">
+<span>Integration Hub</span>
+<span class="material-symbols-outlined text-[10px]">chevron_right</span>
+<span>SAP Objects</span>
+<span class="material-symbols-outlined text-[10px]">chevron_right</span>
+<span class="text-blue-600">Sales Orders</span>
+</nav>
+<h2 class="text-[1.375rem] font-semibold text-on-surface leading-none">Sales Orders</h2>
+</div>
+<div class="h-8 w-px bg-slate-200/50 mx-2"></div>
+<nav class="flex items-center gap-6">
+<a class="text-sm font-medium text-slate-500 hover:text-blue-600" href="#">Overview</a>
+<a class="text-sm font-semibold text-blue-600 border-b-2 border-blue-600 h-14 flex items-center" href="#">SAP Objects</a>
+<a class="text-sm font-medium text-slate-500 hover:text-blue-600" href="#">System</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="text-right">
+<p class="text-[10px] font-bold uppercase text-slate-400 tracking-tighter">Last Sync: 12m ago</p>
+</div>
+<button class="bg-gradient-to-b from-primary-container to-primary text-white text-xs font-semibold px-4 py-2 rounded-lg shadow-sm hover:brightness-110 transition-all active:scale-95">
+                    Trigger Sync
+                </button>
+<div class="flex items-center gap-2 ml-4">
+<button class="p-2 text-slate-500 hover:bg-slate-100 rounded-full">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 text-slate-500 hover:bg-slate-100 rounded-full">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+</div>
+</header>
+<section class="p-8 space-y-8 flex-1">
+<div class="grid grid-cols-4 gap-6">
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-4xl">order_approve</span>
+</div>
+<p class="text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-1">Total Open Orders</p>
+<h3 class="text-3xl font-bold text-on-surface">10</h3>
+<div class="mt-4 flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+<span class="text-[10px] font-medium text-slate-500">Current active window</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-4xl">payments</span>
+</div>
+<p class="text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-1">Total Value</p>
+<h3 class="text-3xl font-bold text-on-surface">£31,800</h3>
+<div class="mt-4 flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+<span class="text-[10px] font-medium text-slate-500">+12% from last period</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-4xl">task_alt</span>
+</div>
+<p class="text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-1">Fully Processed</p>
+<h3 class="text-3xl font-bold text-on-surface">5</h3>
+<div class="mt-4 flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+<span class="text-[10px] font-medium text-slate-500">50% completion rate</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm relative overflow-hidden group border-l-4 border-amber-400">
+<div class="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-4xl text-amber-600">pending_actions</span>
+</div>
+<p class="text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-1">Pending Action</p>
+<h3 class="text-3xl font-bold text-on-surface">4</h3>
+<div class="mt-4 flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+<span class="text-[10px] font-medium text-amber-600 font-bold">Action required</span>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden flex flex-col">
+<div class="px-6 py-4 flex items-center justify-between bg-surface-container-low/50">
+<div class="flex items-center gap-4">
+<h4 class="text-sm font-bold text-on-surface uppercase tracking-tight">Sales Orders</h4>
+<span class="px-2 py-0.5 bg-secondary-container text-on-secondary-container text-[10px] font-bold rounded-full">10 RECORDS</span>
+</div>
+<div class="flex items-center gap-3">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">search</span>
+<input class="pl-9 pr-4 py-1.5 bg-white border-none rounded-lg text-xs w-64 focus:ring-2 focus:ring-primary/20 placeholder:text-slate-400" placeholder="Search orders..." type="text"/>
+</div>
+<button class="flex items-center gap-2 px-3 py-1.5 bg-white text-slate-600 text-xs font-semibold rounded-lg hover:bg-slate-50 transition-colors shadow-sm">
+<span class="material-symbols-outlined text-sm">filter_list</span>
+                            Status
+                        </button>
+<button class="flex items-center gap-2 px-3 py-1.5 bg-white text-slate-600 text-xs font-semibold rounded-lg hover:bg-slate-50 transition-colors shadow-sm">
+                            Org
+                        </button>
+<div class="h-6 w-px bg-slate-200"></div>
+<button class="p-1.5 text-slate-500 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">ios_share</span>
+</button>
+<button class="p-1.5 text-slate-500 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">view_column</span>
+</button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-high">
+<th class="py-3 px-4 w-10"><input class="rounded-sm border-outline-variant text-primary focus:ring-primary/20" type="checkbox"/></th>
+<th class="py-3 px-4 text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">Order #</th>
+<th class="py-3 px-4 text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">Type</th>
+<th class="py-3 px-4 text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">Sales Org</th>
+<th class="py-3 px-4 text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">Dist. Channel</th>
+<th class="py-3 px-4 text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">Customer ID</th>
+<th class="py-3 px-4 text-[11px] font-bold uppercase tracking-wider text-on-surface-variant">Delivery Date</th>
+<th class="py-3 px-4 text-[11px] font-bold uppercase tracking-wider text-on-surface-variant text-right">Net Amount</th>
+<th class="py-3 px-4 text-[11px] font-bold uppercase tracking-wider text-on-surface-variant text-center">Process Status</th>
+<th class="py-3 px-4 text-[11px] font-bold uppercase tracking-wider text-on-surface-variant text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-white/10">
+</tbody>
+</table>
+</div>
+<div class="px-6 py-3 bg-surface-container-low/50 flex items-center justify-between border-t border-slate-200/10">
+<p class="text-[10px] text-slate-500 font-bold uppercase">Showing 1-10 of 10 Results</p>
+<div class="flex items-center gap-1">
+<button class="p-1 text-slate-400 hover:text-primary transition-colors disabled:opacity-30" disabled="">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<span class="px-3 py-1 bg-primary text-white text-xs font-bold rounded">1</span>
+<button class="p-1 text-slate-400 hover:text-primary transition-colors disabled:opacity-30" disabled="">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+</main>
+<div class="fixed top-0 right-0 h-screen w-[480px] bg-white shadow-2xl z-50 transform transition-transform duration-300 translate-x-0 border-l border-slate-100">
+<div class="flex flex-col h-full">
+<div class="h-14 px-6 flex items-center justify-between bg-surface-container-low border-b border-slate-200/30">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary">receipt_long</span>
+<h3 class="text-sm font-bold text-on-surface uppercase tracking-tight">Sales Order #3</h3>
+</div>
+<button class="p-2 text-slate-400 hover:text-slate-600 rounded-full transition-colors">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="flex border-b border-slate-100 bg-white sticky top-0 z-10">
+<button class="flex-1 py-4 text-xs font-bold uppercase tracking-wider text-primary border-b-2 border-primary">Details</button>
+<button class="flex-1 py-4 text-xs font-bold uppercase tracking-wider text-slate-400 hover:text-slate-600 transition-colors">Write Back to SAP</button>
+</div>
+<div class="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-8">
+<section>
+<h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4 bg-surface-container-high px-2 py-1 inline-block rounded">Order Info</h4>
+<div class="grid grid-cols-2 gap-y-4 gap-x-6">
+<div>
+<p class="text-[10px] text-slate-400 font-bold uppercase">Order Number</p>
+<p class="text-xs font-semibold text-on-surface">3</p>
+</div>
+<div>
+<p class="text-[10px] text-slate-400 font-bold uppercase">Order Type</p>
+<p class="text-xs font-semibold text-on-surface">Standard Order (OR)</p>
+</div>
+<div>
+<p class="text-[10px] text-slate-400 font-bold uppercase">Customer Name</p>
+<p class="text-xs font-semibold text-on-surface">Main Distribution Ltd.</p>
+</div>
+<div>
+<p class="text-[10px] text-slate-400 font-bold uppercase">Customer ID</p>
+<p class="text-xs font-semibold text-on-surface">CUS-045</p>
+</div>
+</div>
+</section>
+<section>
+<h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4 bg-surface-container-high px-2 py-1 inline-block rounded">Organization</h4>
+<div class="grid grid-cols-2 gap-y-4 gap-x-6">
+<div>
+<p class="text-[10px] text-slate-400 font-bold uppercase">Sales Org</p>
+<p class="text-xs font-semibold text-on-surface">1720 (Domestic)</p>
+</div>
+<div>
+<p class="text-[10px] text-slate-400 font-bold uppercase">Dist. Channel</p>
+<p class="text-xs font-semibold text-on-surface">20 (Wholesale)</p>
+</div>
+</div>
+</section>
+<section>
+<h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4 bg-surface-container-high px-2 py-1 inline-block rounded">Financials</h4>
+<div class="grid grid-cols-2 gap-y-4 gap-x-6">
+<div>
+<p class="text-[10px] text-slate-400 font-bold uppercase">Net Amount</p>
+<p class="text-sm font-bold text-primary">£12,000.00</p>
+</div>
+<div>
+<p class="text-[10px] text-slate-400 font-bold uppercase">Currency</p>
+<p class="text-xs font-semibold text-on-surface">GBP</p>
+</div>
+</div>
+</section>
+<section>
+<h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4 bg-surface-container-high px-2 py-1 inline-block rounded">Dates</h4>
+<div class="grid grid-cols-2 gap-y-4 gap-x-6">
+<div>
+<p class="text-[10px] text-slate-400 font-bold uppercase">Order Date</p>
+<p class="text-xs font-semibold text-on-surface">2023-11-15</p>
+</div>
+<div>
+<p class="text-[10px] text-slate-400 font-bold uppercase">Requested Delivery</p>
+<p class="text-xs font-semibold text-on-surface">2023-11-25</p>
+</div>
+</div>
+</section>
+<section class="bg-surface p-4 rounded-lg">
+<h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4">SAP Status</h4>
+<div class="space-y-4">
+<div class="flex items-center justify-between">
+<span class="text-xs text-on-surface-variant">Source System</span>
+<span class="text-xs font-mono font-bold text-primary">SAP S/4HANA</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-xs text-on-surface-variant">Delivery Status</span>
+<span class="text-[10px] font-bold px-2 py-0.5 bg-amber-100 text-amber-700 rounded-sm">PENDING</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-xs text-on-surface-variant">Last Integration Check</span>
+<span class="text-[10px] text-slate-500 italic">Today, 09:12 AM</span>
+</div>
+</div>
+</section>
+</div>
+<div class="p-6 bg-surface-container-low border-t border-slate-200/50 flex gap-3">
+<button class="flex-1 px-4 py-2.5 bg-gradient-to-b from-primary-container to-primary text-white text-xs font-bold uppercase tracking-wider rounded-lg shadow-sm hover:brightness-110">
+                    Process Selection
+                </button>
+<button class="px-4 py-2.5 bg-white text-slate-600 text-xs font-bold uppercase tracking-wider rounded-lg shadow-sm hover:bg-slate-50 border border-slate-200/50">
+                    Cancel
+                </button>
+</div>
+</div>
+</div>
+</body></html>
