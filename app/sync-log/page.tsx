@@ -1,16 +1,13 @@
-import { prisma } from "@/lib/db/prisma";
 import { SyncLogTable } from "@/components/sync-log/SyncLogTable";
 import { MaterialIcon } from "@/components/shared/MaterialIcon";
 
-export const dynamic = "force-dynamic";
+// TODO: Replace with real data source (Upstash Redis, etc.)
+const logs: any[] = [];
 
-export default async function SyncLogPage() {
-  const logs = await prisma.syncLog.findMany({ orderBy: { timestamp: "desc" } });
-  const serialized = logs.map((l) => ({ ...l, timestamp: l.timestamp.toISOString() }));
-
+export default function SyncLogPage() {
   const totalSyncs = logs.length;
-  const successCount = logs.filter((l) => l.status === "Success").length;
-  const errorCount = logs.filter((l) => l.status === "Failed").length;
+  const successCount = logs.filter((l: any) => l.status === "Success").length;
+  const errorCount = logs.filter((l: any) => l.status === "Failed").length;
   const successRate = totalSyncs > 0 ? ((successCount / totalSyncs) * 100).toFixed(1) : "0";
 
   return (
@@ -37,7 +34,7 @@ export default async function SyncLogPage() {
         </div>
       </div>
 
-      <SyncLogTable logs={serialized as any} />
+      <SyncLogTable logs={logs} />
 
       {/* Action Bento Cards */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
