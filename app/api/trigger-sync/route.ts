@@ -21,11 +21,13 @@ export async function POST() {
     }
   );
 
-  const data = await res.json().catch(() => ({}));
+  const text = await res.text();
+  console.log("Cobalt response status:", res.status, "body:", text);
 
   if (!res.ok) {
-    return NextResponse.json({ error: "Workflow trigger failed", details: data }, { status: res.status });
+    return NextResponse.json({ error: "Workflow trigger failed", status: res.status, body: text }, { status: 502 });
   }
 
+  const data = text ? JSON.parse(text) : {};
   return NextResponse.json({ success: true, data });
 }

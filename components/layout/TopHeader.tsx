@@ -41,11 +41,19 @@ export function TopHeader() {
     setSyncStatus("syncing");
     try {
       const res = await fetch("/api/trigger-sync", { method: "POST" });
-      if (!res.ok) throw new Error("Trigger failed");
+      const body = await res.json();
+      if (!res.ok) {
+        console.error("Trigger sync failed:", body);
+        alert(`Sync failed: ${JSON.stringify(body)}`);
+        setSyncStatus("idle");
+        return;
+      }
       setSyncStatus("synced");
       setLastSyncTime(new Date());
       setTimeout(() => setSyncStatus("idle"), 3000);
-    } catch {
+    } catch (err) {
+      console.error("Trigger sync error:", err);
+      alert(`Sync error: ${err}`);
       setSyncStatus("idle");
     }
   }, [setSyncStatus, setLastSyncTime]);
