@@ -39,11 +39,15 @@ export function TopHeader() {
 
   const handleTriggerSync = useCallback(async () => {
     setSyncStatus("syncing");
-    // Simulate sync
-    await new Promise((r) => setTimeout(r, 2000));
-    setSyncStatus("synced");
-    setLastSyncTime(new Date());
-    setTimeout(() => setSyncStatus("idle"), 3000);
+    try {
+      const res = await fetch("/api/trigger-sync", { method: "POST" });
+      if (!res.ok) throw new Error("Trigger failed");
+      setSyncStatus("synced");
+      setLastSyncTime(new Date());
+      setTimeout(() => setSyncStatus("idle"), 3000);
+    } catch {
+      setSyncStatus("idle");
+    }
   }, [setSyncStatus, setLastSyncTime]);
 
   return (
