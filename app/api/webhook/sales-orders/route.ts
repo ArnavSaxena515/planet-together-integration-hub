@@ -1,13 +1,31 @@
-import { NextRequest, NextResponse } from "next/server";
+import { upsertSalesOrders } from '@/lib/sales-orders'
+import { writeSyncLog } from '@/lib/sync-log'
 
-// TODO: Replace with real data source
-export async function POST(request: NextRequest) {
+export async function POST(req: Request) {
   try {
-    const body = await request.json();
-    const orders = body.bulk_sales_orders || (body.single_sales_order ? [body.single_sales_order] : []);
-    console.log(`[Webhook] Received ${orders.length} sales orders`);
-    return NextResponse.json({ success: true, upserted: orders.length });
-  } catch (error: any) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    const body = await req.json()
+    const records = [
+      ...(body.bulk_sales_orders ?? []),
+      ...(body.single_sales_order && Object.keys(body.single_sales_order).length
+        ? [body.single_sales_order]
+        : [])
+    ]
+    const upserted = await upsertSalesOrders(records)
+    await writeSyncLog({
+      direction: 'Inbound',
+      objectType: 'Sales Orders',
+      recordCount: upserted,
+      status: 'Success',
+    })
+    return Response.json({ success: true, upserted })
+  } catch (err: any) {
+    await writeSyncLog({
+      direction: 'Inbound',
+      objectType: 'Sales Orders',
+      recordCount: 0,
+      status: 'Failed',
+      errorMsg: err.message,
+    })
+    return Response.json({ success: false, error: err.message }, { status: 500 })
   }
 }

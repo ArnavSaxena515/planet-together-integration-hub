@@ -1,18 +1,17 @@
-import { SyncLogTable } from "@/components/sync-log/SyncLogTable";
-import { MaterialIcon } from "@/components/shared/MaterialIcon";
+import { getSyncLog } from '@/lib/sync-log'
+import { SyncLogTable } from '@/components/sync-log/SyncLogTable'
+import { MaterialIcon } from '@/components/shared/MaterialIcon'
 
-// TODO: Replace with real data source (Upstash Redis, etc.)
-const logs: any[] = [];
+export default async function SyncLogPage() {
+  const logs = await getSyncLog(50)
 
-export default function SyncLogPage() {
-  const totalSyncs = logs.length;
-  const successCount = logs.filter((l: any) => l.status === "Success").length;
-  const errorCount = logs.filter((l: any) => l.status === "Failed").length;
-  const successRate = totalSyncs > 0 ? ((successCount / totalSyncs) * 100).toFixed(1) : "0";
+  const totalSyncs = logs.length
+  const successCount = logs.filter(l => l.status === 'Success').length
+  const errorCount = logs.filter(l => l.status === 'Failed').length
+  const successRate = totalSyncs > 0 ? ((successCount / totalSyncs) * 100).toFixed(1) : '0'
 
   return (
     <div className="p-8 space-y-6">
-      {/* Stats Strip */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-surface-container-lowest p-6 rounded-xl shadow-[0_12px_32px_rgba(27,42,71,0.04)]">
           <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-slate-500 mb-1">Total Syncs (24h)</p>
@@ -36,7 +35,6 @@ export default function SyncLogPage() {
 
       <SyncLogTable logs={logs} />
 
-      {/* Action Bento Cards */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-surface-container-lowest p-6 rounded-xl shadow-[0_12px_32px_rgba(27,42,71,0.04)] flex items-center gap-6">
           <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
@@ -60,5 +58,5 @@ export default function SyncLogPage() {
         </div>
       </div>
     </div>
-  );
+  )
 }

@@ -1,47 +1,73 @@
-"use client";
+"use client"
 
-import { useState } from "react";
-import { MaterialIcon } from "@/components/shared/MaterialIcon";
-import type { EditableField } from "@/lib/objects/registry";
+import { useState } from "react"
+import { MaterialIcon } from "@/components/shared/MaterialIcon"
+import type { SalesOrder } from "@/lib/types/sales-order"
 
-interface WriteBackFormProps {
-  objectType: string;
-  externalId: string;
-  editableFields: EditableField[];
-  initialValues: Record<string, string>;
+const SAP_NULL_DATE = '1899-11-30'
+
+function cleanDateValue(iso: string): string {
+  if (!iso || iso.startsWith(SAP_NULL_DATE)) return ''
+  return iso.split('T')[0]
 }
 
-export function WriteBackForm({
-  objectType,
-  externalId,
-  editableFields,
-  initialValues,
-}: WriteBackFormProps) {
-  const [values, setValues] = useState<Record<string, string>>(initialValues);
-  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
-  const [message, setMessage] = useState("");
+interface WriteBackFormProps {
+  order: SalesOrder
+}
+
+export function WriteBackForm({ order }: WriteBackFormProps) {
+  const [values, setValues] = useState({
+    RequestedQty: order.RequestedQty || '',
+    RequestedDeliveryDate: cleanDateValue(order.RequestedDeliveryDate),
+    ScheduledStartDate: cleanDateValue(order.ScheduledStartDate),
+    ScheduledEndDate: cleanDateValue(order.ScheduledEndDate),
+  })
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle")
+  const [message, setMessage] = useState("")
 
   const handleSubmit = async () => {
-    setStatus("loading");
+    setStatus("loading")
     try {
-      const res = await fetch(`/api/write-back/${objectType}/${externalId}`, {
+      const patch: Record<string, string> = {}
+      if (values.RequestedQty !== order.RequestedQty) patch.RequestedQty = values.RequestedQty
+      if (values.RequestedDeliveryDate && values.RequestedDeliveryDate !== cleanDateValue(order.RequestedDeliveryDate))
+        patch.RequestedDeliveryDate = new Date(values.RequestedDeliveryDate).toISOString()
+      if (values.ScheduledStartDate && values.ScheduledStartDate !== cleanDateValue(order.ScheduledStartDate))
+        patch.ScheduledStartDate = new Date(values.ScheduledStartDate).toISOString()
+      if (values.ScheduledEndDate && values.ScheduledEndDate !== cleanDateValue(order.ScheduledEndDate))
+        patch.ScheduledEndDate = new Date(values.ScheduledEndDate).toISOString()
+
+      if (Object.keys(patch).length === 0) {
+        setStatus("error")
+        setMessage("No fields have been changed")
+        return
+      }
+
+      const res = await fetch(`/api/write-back/sales-orders/${order.ExternalId}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
-      });
-      const data = await res.json();
+        body: JSON.stringify(patch),
+      })
+      const data = await res.json()
       if (data.success) {
-        setStatus("success");
-        setMessage(`Successfully pushed to SAP at ${new Date().toLocaleString()}`);
+        setStatus("success")
+        setMessage(`Successfully pushed to SAP at ${new Date().toLocaleString()}`)
       } else {
-        setStatus("error");
-        setMessage(data.error || "Failed to push to SAP");
+        setStatus("error")
+        setMessage(data.error || "Failed to push to SAP")
       }
     } catch {
-      setStatus("error");
-      setMessage("Network error — could not reach SAP endpoint");
+      setStatus("error")
+      setMessage("Network error — could not reach SAP endpoint")
     }
-  };
+  }
+
+  const fields = [
+    { key: "RequestedQty", label: "Requested Qty", type: "text" },
+    { key: "RequestedDeliveryDate", label: "Requested Delivery Date", type: "date" },
+    { key: "ScheduledStartDate", label: "Scheduled Start Date", type: "date" },
+    { key: "ScheduledEndDate", label: "Scheduled End Date", type: "date" },
+  ] as const
 
   return (
     <div className="space-y-6">
@@ -57,29 +83,17 @@ export function WriteBackForm({
         </div>
       </div>
 
-      {editableFields.map((field) => (
+      {fields.map((field) => (
         <div key={field.key}>
           <label className="text-[10px] font-bold text-slate-400 uppercase block mb-2">
             {field.label}
           </label>
-          {field.type === "select" ? (
-            <select
-              value={values[field.key] || ""}
-              onChange={(e) => setValues((v) => ({ ...v, [field.key]: e.target.value }))}
-              className="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white"
-            >
-              {field.options?.map((opt) => (
-                <option key={opt} value={opt}>{opt}</option>
-              ))}
-            </select>
-          ) : (
-            <input
-              type={field.type}
-              value={values[field.key] || ""}
-              onChange={(e) => setValues((v) => ({ ...v, [field.key]: e.target.value }))}
-              className="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
-            />
-          )}
+          <input
+            type={field.type}
+            value={values[field.key]}
+            onChange={(e) => setValues((v) => ({ ...v, [field.key]: e.target.value }))}
+            className="w-full px-3 py-2 text-xs border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
+          />
         </div>
       ))}
 
@@ -105,5 +119,5 @@ export function WriteBackForm({
         {status === "loading" ? "Pushing..." : "Push to SAP"}
       </button>
     </div>
-  );
+  )
 }

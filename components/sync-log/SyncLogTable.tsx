@@ -1,12 +1,17 @@
-"use client";
+"use client"
 
-import { useState } from "react";
-import { type ColumnDef } from "@tanstack/react-table";
-import { DataTable } from "@/components/tables/DataTable";
-import { DirectionBadge } from "@/components/shared/DirectionBadge";
-import { MaterialIcon } from "@/components/shared/MaterialIcon";
-import { formatDateLong } from "@/lib/utils/format";
-import type { SyncLogEntry } from "@/lib/types/sync-log";
+import { useState } from "react"
+import { type ColumnDef } from "@tanstack/react-table"
+import { DataTable } from "@/components/tables/DataTable"
+import { DirectionBadge } from "@/components/shared/DirectionBadge"
+import { MaterialIcon } from "@/components/shared/MaterialIcon"
+import type { SyncLogEntry } from "@/lib/types/sync-log"
+
+function formatLogDate(iso: string): string {
+  return new Date(iso).toLocaleDateString('en-GB', {
+    day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+  })
+}
 
 const columns: ColumnDef<SyncLogEntry, unknown>[] = [
   {
@@ -14,7 +19,7 @@ const columns: ColumnDef<SyncLogEntry, unknown>[] = [
     header: "Timestamp",
     cell: ({ getValue }) => (
       <span className="text-[13px] text-on-surface-variant font-medium">
-        {formatDateLong(getValue() as string)}
+        {formatLogDate(getValue() as string)}
       </span>
     ),
   },
@@ -41,7 +46,7 @@ const columns: ColumnDef<SyncLogEntry, unknown>[] = [
     accessorKey: "status",
     header: "Status",
     cell: ({ getValue }) => {
-      const status = getValue() as string;
+      const status = getValue() as string
       return (
         <span
           className={`inline-flex items-center text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-[2px] ${
@@ -52,7 +57,7 @@ const columns: ColumnDef<SyncLogEntry, unknown>[] = [
         >
           {status}
         </span>
-      );
+      )
     },
   },
   {
@@ -61,22 +66,20 @@ const columns: ColumnDef<SyncLogEntry, unknown>[] = [
     cell: ({ row }) => (
       <div className="text-right">
         <button className="text-slate-400 hover:text-primary transition-colors">
-          <MaterialIcon
-            icon={row.original.status === "Failed" ? "error_outline" : "visibility"}
-          />
+          <MaterialIcon icon={row.original.status === "Failed" ? "error_outline" : "visibility"} />
         </button>
       </div>
     ),
     enableSorting: false,
   },
-];
+]
 
 interface SyncLogTableProps {
-  logs: SyncLogEntry[];
+  logs: SyncLogEntry[]
 }
 
 export function SyncLogTable({ logs }: SyncLogTableProps) {
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState("")
 
   return (
     <section className="bg-surface-container-lowest rounded-xl shadow-[0_12px_32px_rgba(27,42,71,0.08)] overflow-hidden">
@@ -104,7 +107,7 @@ export function SyncLogTable({ logs }: SyncLogTableProps) {
           </button>
         </div>
       </div>
-      <DataTable data={logs} columns={columns} searchValue={search} getRowId={(row) => String(row.id)} />
+      <DataTable data={logs} columns={columns} searchValue={search} getRowId={(row) => row.id} />
       <div className="px-6 py-4 flex items-center justify-between border-t border-slate-100 text-xs text-slate-500">
         <div>Showing 1 to {logs.length} of {logs.length} entries</div>
         <div className="flex items-center gap-2">
@@ -112,5 +115,5 @@ export function SyncLogTable({ logs }: SyncLogTableProps) {
         </div>
       </div>
     </section>
-  );
+  )
 }

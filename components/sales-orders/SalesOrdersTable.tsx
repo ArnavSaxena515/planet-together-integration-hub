@@ -1,16 +1,15 @@
-"use client";
+"use client"
 
-import { useState } from "react";
-import { type ColumnDef } from "@tanstack/react-table";
-import { DataTable } from "@/components/tables/DataTable";
-import { TableToolbar } from "@/components/tables/TableToolbar";
-import { Pagination } from "@/components/tables/Pagination";
-import { StatusBadge } from "@/components/shared/StatusBadge";
-import { MaterialIcon } from "@/components/shared/MaterialIcon";
-import { useAppStore } from "@/lib/store";
-import { formatCurrency, formatDate } from "@/lib/utils/format";
-import type { SalesOrder } from "@/lib/types/sales-order";
-import type { StatusCode } from "@/lib/utils/status";
+import { useState } from "react"
+import { type ColumnDef } from "@tanstack/react-table"
+import { DataTable } from "@/components/tables/DataTable"
+import { TableToolbar } from "@/components/tables/TableToolbar"
+import { Pagination } from "@/components/tables/Pagination"
+import { StatusBadge } from "@/components/shared/StatusBadge"
+import { MaterialIcon } from "@/components/shared/MaterialIcon"
+import { useAppStore } from "@/lib/store"
+import { formatSAPDate, formatAmount } from "@/lib/utils/format"
+import type { SalesOrder } from "@/lib/types/sales-order"
 
 const columns: ColumnDef<SalesOrder, unknown>[] = [
   {
@@ -27,54 +26,54 @@ const columns: ColumnDef<SalesOrder, unknown>[] = [
     enableSorting: false,
   },
   {
-    accessorKey: "salesOrderNumber",
+    accessorKey: "SalesOrderNumber",
     header: "Order #",
     cell: ({ row }) => (
-      <span className="text-xs font-bold text-primary">#{row.original.salesOrderNumber}</span>
+      <span className="text-xs font-bold text-primary">#{row.original.SalesOrderNumber}</span>
     ),
   },
   {
-    accessorKey: "salesOrderType",
+    accessorKey: "SalesOrderType",
     header: "Type",
     cell: ({ getValue }) => <span className="text-xs text-on-surface-variant">{getValue() as string}</span>,
   },
   {
-    accessorKey: "salesOrganization",
+    accessorKey: "SalesOrganization",
     header: "Sales Org",
     cell: ({ getValue }) => <span className="text-xs text-on-surface-variant">{getValue() as string}</span>,
   },
   {
-    accessorKey: "distributionChannel",
+    accessorKey: "DistributionChannel",
     header: "Dist. Channel",
     cell: ({ getValue }) => <span className="text-xs text-on-surface-variant">{getValue() as string}</span>,
   },
   {
-    accessorKey: "customerExternalId",
+    accessorKey: "CustomerExternalId",
     header: "Customer ID",
     cell: ({ getValue }) => <span className="text-xs text-on-surface-variant">{getValue() as string}</span>,
   },
   {
-    accessorKey: "requestedDeliveryDate",
+    accessorKey: "RequestedDeliveryDate",
     header: "Delivery Date",
     cell: ({ getValue }) => (
-      <span className="text-xs text-on-surface-variant">{formatDate(getValue() as string)}</span>
+      <span className="text-xs text-on-surface-variant">{formatSAPDate(getValue() as string)}</span>
     ),
   },
   {
-    accessorKey: "totalNetAmount",
+    accessorKey: "TotalNetAmount",
     header: () => <span className="text-right w-full block">Net Amount</span>,
     cell: ({ row }) => (
       <span className="text-xs font-semibold text-on-surface text-right block">
-        {formatCurrency(row.original.totalNetAmount, row.original.transactionCurrency)}
+        {formatAmount(row.original.TotalNetAmount, row.original.TransactionCurrency)}
       </span>
     ),
   },
   {
-    accessorKey: "sapProcessStatus",
+    accessorKey: "SAPProcessStatus",
     header: () => <span className="text-center w-full block">Process Status</span>,
     cell: ({ getValue }) => (
       <div className="text-center">
-        <StatusBadge code={(getValue() as string) as StatusCode} />
+        <StatusBadge code={getValue() as string} />
       </div>
     ),
   },
@@ -90,15 +89,15 @@ const columns: ColumnDef<SalesOrder, unknown>[] = [
     ),
     enableSorting: false,
   },
-];
+]
 
 interface SalesOrdersTableProps {
-  orders: SalesOrder[];
+  orders: SalesOrder[]
 }
 
 export function SalesOrdersTable({ orders }: SalesOrdersTableProps) {
-  const [search, setSearch] = useState("");
-  const { openSlideOver, activeOrderId } = useAppStore();
+  const [search, setSearch] = useState("")
+  const { openSlideOver, activeOrderId } = useAppStore()
 
   return (
     <div className="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden flex flex-col">
@@ -113,9 +112,9 @@ export function SalesOrdersTable({ orders }: SalesOrdersTableProps) {
         data={orders}
         columns={columns}
         searchValue={search}
-        onRowClick={(row) => openSlideOver(row.externalId)}
+        onRowClick={(row) => openSlideOver(row.ExternalId)}
         activeRowId={activeOrderId}
-        getRowId={(row) => row.externalId}
+        getRowId={(row) => row.ExternalId}
       />
       <Pagination
         currentPage={1}
@@ -125,5 +124,5 @@ export function SalesOrdersTable({ orders }: SalesOrdersTableProps) {
         onPageChange={() => {}}
       />
     </div>
-  );
+  )
 }
