@@ -16,7 +16,7 @@ export async function POST(
 ) {
   try {
     const body = await req.json()
-    const patch: Record<string, any> = {}
+    const patch: Record<string, string> = {}
     for (const key of WRITABLE_FIELDS) {
       if (key in body) patch[key] = body[key]
     }
@@ -32,21 +32,70 @@ export async function POST(
 
     // Date ordering validation
     const existing = await getSalesOrderByExternalId(params.externalId)
-    const start = patch.ScheduledStartDate ?? existing?.ScheduledStartDate
-    const end = patch.ScheduledEndDate ?? existing?.ScheduledEndDate
+    if (!existing)
+      return Response.json({ success: false, error: 'Order not found' }, { status: 404 })
+
+    const start = patch.ScheduledStartDate ?? existing.ScheduledStartDate
+    const end = patch.ScheduledEndDate ?? existing.ScheduledEndDate
     if (start && end && !String(start).startsWith(SAP_NULL_DATE) && !String(end).startsWith(SAP_NULL_DATE)) {
       if (new Date(end) < new Date(start)) {
         return Response.json({ success: false, error: 'Scheduled End Date must be after Start Date' }, { status: 400 })
       }
     }
 
+    // Patch Redis
     const updated = await patchSalesOrder(params.externalId, patch)
-    if (!updated)
-      return Response.json({ success: false, error: 'Order not found' }, { status: 404 })
 
-    // TODO: Forward to SAP S/4HANA
-    // await sapClient.patch(`/sap/opu/odata/sap/API_SALES_ORDER_SRV/A_SalesOrder('${params.externalId}')`, patch)
-    console.log('[write-back] SAP forward stub:', params.externalId, patch)
+    // Normalize values for the workflow
+    const normalizedPatch: Record<string, string> = {}
+    for (const [key, value] of Object.entries(patch)) {
+      if (key === 'RequestedQty') {
+        normalizedPatch[key] = String(parseFloat(value))
+      } else {
+        normalizedPatch[key] = new Date(value).toISOString()
+      }
+    }
+
+    // Build workflow payload
+    const workflowPayload = {
+      orders: [
+        {
+          ExternalId: existing.ExternalId,
+          SalesOrderNumber: existing.SalesOrderNumber,
+          SalesOrderItem: existing.SalesOrderItem,
+          changes: normalizedPatch,
+        },
+      ],
+    }
+
+    // Call Cobalt workflow
+    const apiKey = process.env.COBALT_API_KEY
+    if (!apiKey) {
+      throw new Error('COBALT_API_KEY not configured')
+    }
+
+    const workflowRes = await fetch(
+      'https://sapis.gocobalt.io/api/v1/workflow/69d8ed8c9802ffb2864b85e1/execute',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-API-Key': apiKey,
+          'linked_account_id': 'cobalt_test_user',
+          'slug': 'Refo-695',
+          'sync_execution': 'false',
+        },
+        body: JSON.stringify(workflowPayload),
+      }
+    )
+
+    if (!workflowRes.ok) {
+      const errText = await workflowRes.text()
+      console.error('[write-back] Workflow failed:', workflowRes.status, errText)
+      throw new Error(`Workflow call failed: ${workflowRes.status}`)
+    }
+
+    console.log('[write-back] Workflow triggered for:', params.externalId, normalizedPatch)
 
     await writeSyncLog({
       direction: 'Outbound',
@@ -54,6 +103,7 @@ export async function POST(
       recordCount: 1,
       status: 'Success',
     })
+
     return Response.json({
       success: true,
       externalId: params.externalId,
