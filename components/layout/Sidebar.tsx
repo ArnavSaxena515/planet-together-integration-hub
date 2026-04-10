@@ -9,6 +9,8 @@ const navItems = [
   { label: "Sales Orders", icon: "receipt_long", href: "/sales-orders" },
   { label: "Items", icon: "category", href: "/items" },
   { label: "Inventory", icon: "inventory_2", href: "/inventory" },
+  { label: "Warehouses", icon: "warehouse", href: "/warehouses" },
+  { label: "Plant Data", icon: "account_tree", href: "/plant-data" },
   { label: "Sync Log", icon: "sync_alt", href: "/sync-log" },
   { label: "Settings", icon: "settings", href: "/settings" },
 ];

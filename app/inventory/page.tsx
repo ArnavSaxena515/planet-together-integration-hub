@@ -1,13 +1,49 @@
-import { MaterialIcon } from "@/components/shared/MaterialIcon";
+import { getInventory } from '@/lib/inventory'
+import { InventoryTable } from '@/components/inventory/InventoryTable'
+import { KpiCard } from '@/components/shared/KpiCard'
 
-export default function InventoryPage() {
+export const dynamic = 'force-dynamic'
+
+export default async function InventoryPage() {
+  const inventory = await getInventory()
+
+  const totalOnHand = inventory.reduce((sum, i) => sum + parseFloat(i.OnHandQty || '0'), 0)
+  const uniqueWarehouses = new Set(inventory.map(i => i.WarehouseExternalId)).size
+  const uniqueItems = new Set(inventory.map(i => i.ItemExternalId)).size
+
   return (
-    <section className="p-8">
-      <div className="bg-surface-container-lowest rounded-xl shadow-sm p-12 text-center">
-        <MaterialIcon icon="inventory_2" className="text-6xl text-slate-300 mb-4" />
-        <h3 className="text-lg font-semibold text-on-surface mb-2">Inventory</h3>
-        <p className="text-sm text-on-surface-variant">Inventory management coming soon. This page will mirror the Sales Orders pattern.</p>
+    <section className="p-8 space-y-8 flex-1">
+      <div className="grid grid-cols-4 gap-6">
+        <KpiCard
+          label="Inventory Records"
+          value={inventory.length}
+          subtext="Synced from SAP"
+          icon="inventory_2"
+          accentColor="bg-blue-500"
+        />
+        <KpiCard
+          label="Total On Hand"
+          value={totalOnHand.toLocaleString()}
+          subtext="Across all locations"
+          icon="package_2"
+          accentColor="bg-emerald-500"
+        />
+        <KpiCard
+          label="Warehouses"
+          value={uniqueWarehouses}
+          subtext="With inventory"
+          icon="warehouse"
+          accentColor="bg-amber-500"
+        />
+        <KpiCard
+          label="Unique Items"
+          value={uniqueItems}
+          subtext="In inventory"
+          icon="category"
+          accentColor="bg-purple-500"
+        />
       </div>
+      <InventoryTable inventory={inventory} />
     </section>
-  );
+  )
 }

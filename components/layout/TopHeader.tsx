@@ -19,6 +19,8 @@ const breadcrumbMap: Record<string, { category: string; label: string }> = {
   "/sales-orders": { category: "SAP Objects", label: "Sales Orders" },
   "/items": { category: "SAP Objects", label: "Items" },
   "/inventory": { category: "SAP Objects", label: "Inventory" },
+  "/warehouses": { category: "SAP Objects", label: "Warehouses" },
+  "/plant-data": { category: "SAP Objects", label: "Plant Data" },
   "/sync-log": { category: "System", label: "Sync Log" },
   "/settings": { category: "System", label: "Settings" },
 };
