@@ -93,6 +93,27 @@ export function TopHeader() {
     }
   }, [setSyncStatus, setLastSyncTime, pollUntilStable]);
 
+  const [resetting, setResetting] = useState(false);
+
+  const handleReset = useCallback(async () => {
+    if (!confirm("This will clear all synced data (orders, items, inventory, warehouses, plant data). Continue?")) return;
+    setResetting(true);
+    try {
+      const res = await fetch("/api/reset-data", { method: "POST" });
+      const body = await res.json();
+      if (!res.ok) {
+        alert(`Reset failed: ${JSON.stringify(body)}`);
+      } else {
+        setSyncDetail("Data cleared");
+        setTimeout(() => setSyncDetail(""), 2000);
+      }
+    } catch (err) {
+      alert(`Reset error: ${err}`);
+    } finally {
+      setResetting(false);
+    }
+  }, []);
+
   return (
     <header className="h-14 w-full sticky top-0 z-40 bg-white/85 backdrop-blur-md border-b border-slate-200/20 flex items-center justify-between px-8 shadow-sm">
       <div className="flex items-center gap-6">
@@ -118,8 +139,15 @@ export function TopHeader() {
           )}
         </div>
         <button
+          onClick={handleReset}
+          disabled={resetting || syncStatus === "syncing"}
+          className="text-red-500 border border-red-200 bg-red-50 hover:bg-red-100 text-xs font-semibold px-4 py-2 rounded-lg transition-all active:scale-95 disabled:opacity-70"
+        >
+          {resetting ? "Resetting..." : "Reset Data"}
+        </button>
+        <button
           onClick={handleTriggerSync}
-          disabled={syncStatus === "syncing"}
+          disabled={syncStatus === "syncing" || resetting}
           className="bg-gradient-to-b from-primary-container to-primary text-white text-xs font-semibold px-4 py-2 rounded-lg shadow-sm hover:brightness-110 transition-all active:scale-95 disabled:opacity-70"
         >
           {syncStatus === "syncing" ? (
