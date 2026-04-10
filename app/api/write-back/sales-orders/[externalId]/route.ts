@@ -62,7 +62,7 @@ export async function POST(
         {
           ExternalId: existing.ExternalId,
           SalesOrderNumber: existing.SalesOrderNumber,
-          SalesOrderItem: existing.SalesOrderItem,
+          SalesOrderItem: existing.SalesOrderItem && existing.SalesOrderItem !== "0" && existing.SalesOrderItem !== "" ? existing.SalesOrderItem : "10",
           changes: normalizedPatch,
         },
       ],
