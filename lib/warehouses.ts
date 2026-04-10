@@ -4,13 +4,13 @@ import type { Warehouse } from './types/warehouse'
 const KEY = 'warehouses'
 
 export async function upsertWarehouse(wh: Warehouse): Promise<void> {
-  await redis.hset(KEY, { [wh.ExternalId]: JSON.stringify(wh) })
+  await redis.hset(KEY, { [wh.ExternalId]: wh })
 }
 
 export async function getWarehouses(): Promise<Warehouse[]> {
-  const hash = await redis.hgetall(KEY)
+  const hash: Record<string, Warehouse> | null = await redis.hgetall(KEY)
   if (!hash) return []
-  return Object.values(hash).map(v => JSON.parse(v as string) as Warehouse)
+  return Object.values(hash)
 }
 
 export async function getWarehouseCount(): Promise<number> {
