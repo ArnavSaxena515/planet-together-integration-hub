@@ -37,8 +37,38 @@ export function TopHeader() {
     return () => clearInterval(interval);
   }, [lastSyncTime]);
 
+  const [syncDetail, setSyncDetail] = useState("");
+
+  const pollUntilStable = useCallback(async () => {
+    let prevTotal = -1;
+    let stableCount = 0;
+    const MAX_STABLE = 3; // 3 consecutive same-count polls = done
+    const POLL_MS = 3000;
+    const MAX_POLLS = 60; // safety: stop after ~3 min
+
+    for (let i = 0; i < MAX_POLLS; i++) {
+      await new Promise((r) => setTimeout(r, POLL_MS));
+      try {
+        const res = await fetch("/api/sync-counts");
+        const counts = await res.json();
+        const total = counts.salesOrders + counts.items + counts.inventory + counts.warehouses + counts.plantWarehouses;
+        setSyncDetail(`${counts.salesOrders} orders · ${counts.items} items · ${counts.inventory} inv · ${counts.warehouses} wh · ${counts.plantWarehouses} plant`);
+        if (total === prevTotal) {
+          stableCount++;
+          if (stableCount >= MAX_STABLE) return;
+        } else {
+          stableCount = 0;
+        }
+        prevTotal = total;
+      } catch {
+        // ignore poll errors, keep trying
+      }
+    }
+  }, []);
+
   const handleTriggerSync = useCallback(async () => {
     setSyncStatus("syncing");
+    setSyncDetail("Triggering workflows...");
     try {
       const res = await fetch("/api/trigger-sync", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({}) });
       const body = await res.json();
@@ -46,17 +76,22 @@ export function TopHeader() {
         console.error("Trigger sync failed:", body);
         alert(`Sync failed: ${JSON.stringify(body)}`);
         setSyncStatus("idle");
+        setSyncDetail("");
         return;
       }
+      setSyncDetail("Waiting for data...");
+      await pollUntilStable();
       setSyncStatus("synced");
       setLastSyncTime(new Date());
+      setSyncDetail("");
       setTimeout(() => setSyncStatus("idle"), 3000);
     } catch (err) {
       console.error("Trigger sync error:", err);
       alert(`Sync error: ${err}`);
       setSyncStatus("idle");
+      setSyncDetail("");
     }
-  }, [setSyncStatus, setLastSyncTime]);
+  }, [setSyncStatus, setLastSyncTime, pollUntilStable]);
 
   return (
     <header className="h-14 w-full sticky top-0 z-40 bg-white/85 backdrop-blur-md border-b border-slate-200/20 flex items-center justify-between px-8 shadow-sm">
@@ -78,6 +113,9 @@ export function TopHeader() {
           <p className="text-[10px] font-bold uppercase text-slate-400 tracking-tighter">
             Last Sync: {lastSyncText}
           </p>
+          {syncDetail && (
+            <p className="text-[9px] text-blue-500 font-medium tracking-tight">{syncDetail}</p>
+          )}
         </div>
         <button
           onClick={handleTriggerSync}
