@@ -10,9 +10,14 @@ export async function upsertPlantWarehouse(pw: PlantWarehouse): Promise<void> {
 }
 
 export async function getPlantWarehouses(): Promise<PlantWarehouse[]> {
-  const hash: Record<string, PlantWarehouse> | null = await redis.hgetall(KEY)
-  if (!hash) return []
-  return Object.values(hash)
+  try {
+    const hash: Record<string, PlantWarehouse> | null = await redis.hgetall(KEY)
+    if (!hash) return []
+    return Object.values(hash)
+  } catch {
+    await redis.del(KEY)
+    return []
+  }
 }
 
 export async function getPlantWarehouseCount(): Promise<number> {

@@ -8,9 +8,14 @@ export async function upsertItem(item: Item): Promise<void> {
 }
 
 export async function getItems(): Promise<Item[]> {
-  const hash: Record<string, Item> | null = await redis.hgetall(KEY)
-  if (!hash) return []
-  return Object.values(hash)
+  try {
+    const hash: Record<string, Item> | null = await redis.hgetall(KEY)
+    if (!hash) return []
+    return Object.values(hash)
+  } catch {
+    await redis.del(KEY)
+    return []
+  }
 }
 
 export async function getItemCount(): Promise<number> {

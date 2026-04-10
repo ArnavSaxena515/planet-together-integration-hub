@@ -14,9 +14,15 @@ export async function upsertSalesOrders(incoming: SalesOrder[]): Promise<number>
 }
 
 export async function getSalesOrders(): Promise<SalesOrder[]> {
-  const hash: Record<string, SalesOrder> | null = await redis.hgetall(KEY)
-  if (!hash) return []
-  return Object.values(hash)
+  try {
+    const hash: Record<string, SalesOrder> | null = await redis.hgetall(KEY)
+    if (!hash) return []
+    return Object.values(hash)
+  } catch {
+    // Key might be wrong type from old format — delete and return empty
+    await redis.del(KEY)
+    return []
+  }
 }
 
 export async function getSalesOrderByExternalId(externalId: string): Promise<SalesOrder | null> {

@@ -10,9 +10,14 @@ export async function upsertInventory(inv: Inventory): Promise<void> {
 }
 
 export async function getInventory(): Promise<Inventory[]> {
-  const hash: Record<string, Inventory> | null = await redis.hgetall(KEY)
-  if (!hash) return []
-  return Object.values(hash)
+  try {
+    const hash: Record<string, Inventory> | null = await redis.hgetall(KEY)
+    if (!hash) return []
+    return Object.values(hash)
+  } catch {
+    await redis.del(KEY)
+    return []
+  }
 }
 
 export async function getInventoryCount(): Promise<number> {

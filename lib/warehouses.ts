@@ -8,9 +8,14 @@ export async function upsertWarehouse(wh: Warehouse): Promise<void> {
 }
 
 export async function getWarehouses(): Promise<Warehouse[]> {
-  const hash: Record<string, Warehouse> | null = await redis.hgetall(KEY)
-  if (!hash) return []
-  return Object.values(hash)
+  try {
+    const hash: Record<string, Warehouse> | null = await redis.hgetall(KEY)
+    if (!hash) return []
+    return Object.values(hash)
+  } catch {
+    await redis.del(KEY)
+    return []
+  }
 }
 
 export async function getWarehouseCount(): Promise<number> {
