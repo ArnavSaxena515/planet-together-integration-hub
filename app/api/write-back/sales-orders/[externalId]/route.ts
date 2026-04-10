@@ -52,7 +52,12 @@ export async function POST(
       if (key === 'RequestedQty') {
         normalizedPatch[key] = String(parseFloat(value))
       } else {
-        normalizedPatch[key] = new Date(value).toISOString()
+        // Format as "YYYY-MM-DD 00:00:00" for MySQL/SAP
+        const d = new Date(value)
+        const yyyy = d.getUTCFullYear()
+        const mm = String(d.getUTCMonth() + 1).padStart(2, '0')
+        const dd = String(d.getUTCDate()).padStart(2, '0')
+        normalizedPatch[key] = `${yyyy}-${mm}-${dd} 00:00:00`
       }
     }
 
