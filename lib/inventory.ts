@@ -6,17 +6,15 @@ const KEY = 'inventory'
 function inventoryKey(i: Inventory) { return `${i.ItemExternalId}::${i.WarehouseExternalId}` }
 
 export async function upsertInventory(inv: Inventory): Promise<void> {
-  const existing: Inventory[] = await redis.get(KEY) ?? []
-  const idx = existing.findIndex(e => inventoryKey(e) === inventoryKey(inv))
-  if (idx >= 0) existing[idx] = inv; else existing.push(inv)
-  await redis.set(KEY, existing)
+  await redis.hset(KEY, { [inventoryKey(inv)]: JSON.stringify(inv) })
 }
 
 export async function getInventory(): Promise<Inventory[]> {
-  return await redis.get(KEY) ?? []
+  const hash = await redis.hgetall(KEY)
+  if (!hash) return []
+  return Object.values(hash).map(v => JSON.parse(v as string) as Inventory)
 }
 
 export async function getInventoryCount(): Promise<number> {
-  const inv: Inventory[] = await redis.get(KEY) ?? []
-  return inv.length
+  return await redis.hlen(KEY)
 }

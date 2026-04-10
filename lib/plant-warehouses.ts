@@ -6,17 +6,15 @@ const KEY = 'plant-warehouses'
 function pwKey(pw: PlantWarehouse) { return `${pw.WarehouseExternalId}::${pw.PlantExternalId}` }
 
 export async function upsertPlantWarehouse(pw: PlantWarehouse): Promise<void> {
-  const existing: PlantWarehouse[] = await redis.get(KEY) ?? []
-  const idx = existing.findIndex(e => pwKey(e) === pwKey(pw))
-  if (idx >= 0) existing[idx] = pw; else existing.push(pw)
-  await redis.set(KEY, existing)
+  await redis.hset(KEY, { [pwKey(pw)]: JSON.stringify(pw) })
 }
 
 export async function getPlantWarehouses(): Promise<PlantWarehouse[]> {
-  return await redis.get(KEY) ?? []
+  const hash = await redis.hgetall(KEY)
+  if (!hash) return []
+  return Object.values(hash).map(v => JSON.parse(v as string) as PlantWarehouse)
 }
 
 export async function getPlantWarehouseCount(): Promise<number> {
-  const pws: PlantWarehouse[] = await redis.get(KEY) ?? []
-  return pws.length
+  return await redis.hlen(KEY)
 }
