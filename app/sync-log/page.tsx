@@ -2,6 +2,8 @@ import { prisma } from "@/lib/db/prisma";
 import { SyncLogTable } from "@/components/sync-log/SyncLogTable";
 import { MaterialIcon } from "@/components/shared/MaterialIcon";
 
+export const dynamic = "force-dynamic";
+
 export default async function SyncLogPage() {
   const logs = await prisma.syncLog.findMany({ orderBy: { timestamp: "desc" } });
   const serialized = logs.map((l) => ({ ...l, timestamp: l.timestamp.toISOString() }));

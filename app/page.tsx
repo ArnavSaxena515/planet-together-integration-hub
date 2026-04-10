@@ -2,6 +2,8 @@ import { prisma } from "@/lib/db/prisma";
 import { KpiCard } from "@/components/shared/KpiCard";
 import { formatCurrency } from "@/lib/utils/format";
 
+export const dynamic = "force-dynamic";
+
 export default async function DashboardPage() {
   const orderCount = await prisma.salesOrder.count();
   const orders = await prisma.salesOrder.findMany();

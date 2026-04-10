@@ -4,6 +4,8 @@ import { SalesOrderSlideOver } from "@/components/sales-orders/SalesOrderSlideOv
 import { KpiCard } from "@/components/shared/KpiCard";
 import { formatCurrency } from "@/lib/utils/format";
 
+export const dynamic = "force-dynamic";
+
 export default async function SalesOrdersPage() {
   const orders = await prisma.salesOrder.findMany({ orderBy: { id: "asc" } });
   const serialized = orders.map((o) => ({
