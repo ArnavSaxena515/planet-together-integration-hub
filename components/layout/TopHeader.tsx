@@ -42,11 +42,12 @@ export function TopHeader() {
   const [syncDetail, setSyncDetail] = useState("");
 
   const pollUntilStable = useCallback(async () => {
+    const POLL_MS = 3000;
+    const MIN_POLLS = Math.ceil(50000 / POLL_MS); // at least 50s of polling
+    const MAX_POLLS = 60;
+    const MAX_STABLE = 3;
     let prevTotal = -1;
     let stableCount = 0;
-    const MAX_STABLE = 3; // 3 consecutive same-count polls = done
-    const POLL_MS = 3000;
-    const MAX_POLLS = 60; // safety: stop after ~3 min
 
     for (let i = 0; i < MAX_POLLS; i++) {
       await new Promise((r) => setTimeout(r, POLL_MS));
@@ -57,7 +58,8 @@ export function TopHeader() {
         setSyncDetail(`${counts.salesOrders} orders · ${counts.items} items · ${counts.inventory} inv · ${counts.warehouses} wh · ${counts.plantWarehouses} plant`);
         if (total === prevTotal) {
           stableCount++;
-          if (stableCount >= MAX_STABLE) return;
+          // only stop early if we've polled for at least 50s
+          if (stableCount >= MAX_STABLE && i >= MIN_POLLS) return;
         } else {
           stableCount = 0;
         }
@@ -106,8 +108,11 @@ export function TopHeader() {
       if (!res.ok) {
         alert(`Reset failed: ${JSON.stringify(body)}`);
       } else {
-        setSyncDetail("Data cleared");
-        setTimeout(() => setSyncDetail(""), 2000);
+        setSyncDetail("Data cleared — refreshing...");
+        // Use router.refresh() would only work in app router client components
+        // Force a full page reload so server components re-fetch from Redis
+        window.location.reload();
+        return;
       }
     } catch (err) {
       alert(`Reset error: ${err}`);
