@@ -40,7 +40,7 @@ export function TopHeader() {
   const handleTriggerSync = useCallback(async () => {
     setSyncStatus("syncing");
     try {
-      const res = await fetch("/api/trigger-sync", { method: "POST" });
+      const res = await fetch("/api/trigger-sync", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({}) });
       const body = await res.json();
       if (!res.ok) {
         console.error("Trigger sync failed:", body);
