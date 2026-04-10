@@ -1,5 +1,6 @@
 import { upsertSalesOrders } from '@/lib/sales-orders'
 import { writeSyncLog } from '@/lib/sync-log'
+import { cleanSAPRecord } from '@/lib/utils/sap-string'
 
 export async function POST(req: Request) {
   try {
@@ -9,7 +10,7 @@ export async function POST(req: Request) {
       ...(body.single_sales_order && Object.keys(body.single_sales_order).length
         ? [body.single_sales_order]
         : [])
-    ]
+    ].map(r => cleanSAPRecord(r))
     const upserted = await upsertSalesOrders(records)
     await writeSyncLog({
       direction: 'Inbound',
